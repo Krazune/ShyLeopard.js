@@ -1,4 +1,6 @@
 // WIP api.
+"use strict";
+
 function ShyLeopard(targetContainer, image, layerCount, smallCellSize)
 {
 	this._targetContainer = targetContainer;
