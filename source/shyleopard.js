@@ -61,9 +61,18 @@ ShyLeopard.prototype._generateCircle = function(layer, row, column)
 	let y = column * radius * 2 + radius;
 
 	newCircle.setAttributeNS(null, "style", "fill: " + color + ";");
-	newCircle.setAttributeNS(null, "r", radius);
+	newCircle.setAttributeNS(null, "r", "0");
 	newCircle.setAttributeNS(null, "cx", x);
 	newCircle.setAttributeNS(null, "cy", y);
+
+	// Make sure the transition runs.
+	requestAnimationFrame(function()
+	{
+		requestAnimationFrame(function()
+		{
+			newCircle.setAttributeNS(null, "r", radius.toString());
+		});
+	});
 
 	newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:layer", layer.toString());
 	newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:row", row.toString());
