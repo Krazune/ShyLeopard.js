@@ -1,12 +1,14 @@
 // WIP api.
 "use strict";
 
-function ShyLeopard(targetContainer, image, layerCount, smallCellSize)
+function ShyLeopard(targetContainer, image, layerCount, smallCellSize, completeCallBackFunction)
 {
 	this._targetContainer = targetContainer;
 	this._image = image;
 	this._layerCount = layerCount;
 	this._smallCellSize = smallCellSize;
+	this._lastPops = 0;
+	this._completeCallBackFunction = completeCallBackFunction;
 	this._svgSize = smallCellSize * Math.pow(2, layerCount - 1);
 
 	this._layerCanvases = this._generateLayerCanvases();
@@ -174,6 +176,16 @@ ShyLeopard.prototype._processCircleMouseOver = function(circleElement)
 	circleElement.remove();
 
 	this._generateCircleChildren(parentLayer, parentRow, parentColumn);
+
+	if (parentLayer == this._layerCount - 2)
+	{
+		++this._lastPops;
+	}
+
+	if (this._lastPops == Math.pow(4, this._layerCount - 2))
+	{
+		this._completeCallBackFunction();
+	}
 };
 
 ShyLeopard.prototype._generateCircleChildren = function(parentLayer, parentRow, parentColumn)
