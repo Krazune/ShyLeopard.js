@@ -1,0 +1,5 @@
+/* Temporary styles */
+svg > circle
+{
+	transition: all 0.5s;
+}
