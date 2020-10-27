@@ -64,8 +64,8 @@ ShyLeopard.prototype._generateCircle = function(layer, row, column)
 
 	newCircle.setAttributeNS(null, "style", "fill: " + color + ";");
 	newCircle.setAttributeNS(null, "r", "0");
-	newCircle.setAttributeNS(null, "cx", x);
-	newCircle.setAttributeNS(null, "cy", y);
+	newCircle.setAttributeNS(null, "cx", x.toString());
+	newCircle.setAttributeNS(null, "cy", y.toString());
 
 	// Make sure the transition runs.
 	requestAnimationFrame(function()
