@@ -3,7 +3,12 @@
 {
 	"use strict";
 
-	ShyLeopard.version = "2020.01.1";
+	let version = "2020.01.1";
+
+	ShyLeopard.getVersion = function()
+	{
+		return version;
+	};
 
 	ShyLeopard.Bubbler = function(targetContainer, image, layerCount, smallCellSize, completeCallBackFunction)
 	{
