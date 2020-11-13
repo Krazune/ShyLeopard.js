@@ -16,6 +16,7 @@
 		let _image;
 		let _layerCount;
 		let _smallCellSize;
+		let _transitionTimer;
 		let _lastPops;
 		let _completeCallBackFunction;
 		let _svgSize;
@@ -23,12 +24,13 @@
 		let _layerCanvases;
 		let _svgElement;
 
-		function Bubbler(targetContainer, image, layerCount, smallCellSize, completeCallBackFunction)
+		function Bubbler(targetContainer, image, layerCount, smallCellSize, transitionTimer, completeCallBackFunction)
 		{
 			_targetContainer = targetContainer;
 			_image = image;
 			_layerCount = layerCount;
 			_smallCellSize = smallCellSize;
+			_transitionTimer = transitionTimer;
 			_lastPops = 0;
 			_completeCallBackFunction = completeCallBackFunction;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
@@ -84,25 +86,37 @@
 			let x = row * radius * 2 + radius;
 			let y = column * radius * 2 + radius;
 
-			newCircle.setAttributeNS(null, "style", "fill: " + color + ";");
-			newCircle.setAttributeNS(null, "r", "0");
+			if (_transitionTimer == 0)
+			{
+				newCircle.setAttributeNS(null, "r", radius.toString());
+				newCircle.setAttributeNS(null, "style", "fill: " + color + ";");
+			}
+			else
+			{
+				newCircle.setAttributeNS(null, "r", "0");
+				newCircle.setAttributeNS(null, "style", "fill: " + color + "; transition: all " + _transitionTimer + "s;");
+			}
+
 			newCircle.setAttributeNS(null, "cx", x.toString());
 			newCircle.setAttributeNS(null, "cy", y.toString());
-
-			// Make sure the transition runs.
-			requestAnimationFrame(function()
-			{
-				requestAnimationFrame(function()
-				{
-					newCircle.setAttributeNS(null, "r", radius.toString());
-				});
-			});
 
 			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:layer", layer.toString());
 			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:row", row.toString());
 			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:column", column.toString());
 
 			_svgElement.appendChild(newCircle);
+
+			// Make sure the transition runs.
+			if (_transitionTimer > 0)
+			{
+				requestAnimationFrame(function()
+				{
+					requestAnimationFrame(function()
+					{
+						newCircle.setAttributeNS(null, "r", radius.toString());
+					});
+				});
+			}
 		};
 
 		Bubbler.prototype._getLayerColorHex = function(layer, row, column)
