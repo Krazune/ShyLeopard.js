@@ -24,10 +24,10 @@
 		let _layerCanvases;
 		let _svgElement;
 
-		function Bubbler(targetContainer, image, layerCount, smallCellSize, transitionTimer)
+		function Bubbler(targetContainer, layerCount, smallCellSize, transitionTimer)
 		{
 			_targetContainer = targetContainer;
-			_image = image;
+			_image = null;
 			_layerCount = layerCount;
 			_smallCellSize = smallCellSize;
 			_transitionTimer = transitionTimer;
@@ -35,7 +35,7 @@
 			_completeCallBackFunction = null;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
 
-			_layerCanvases = this._generateLayerCanvases();
+			_layerCanvases = null;
 			_svgElement = this._createSVGElement();
 		};
 
@@ -69,9 +69,11 @@
 			return _svgElement;
 		};
 
-		Bubbler.prototype.generate = function()
+		Bubbler.prototype.generate = function(image)
 		{
 			this.clear();
+			_image = image;
+			_layerCanvases = this._generateLayerCanvases();
 			_targetContainer.appendChild(_svgElement);
 
 			this._generateCircle(0, 0, 0);
