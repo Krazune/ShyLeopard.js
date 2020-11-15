@@ -24,7 +24,7 @@
 		let _layerCanvases;
 		let _svgElement;
 
-		function Bubbler(targetContainer, image, layerCount, smallCellSize, transitionTimer, completeCallBackFunction)
+		function Bubbler(targetContainer, image, layerCount, smallCellSize, transitionTimer)
 		{
 			_targetContainer = targetContainer;
 			_image = image;
@@ -32,11 +32,16 @@
 			_smallCellSize = smallCellSize;
 			_transitionTimer = transitionTimer;
 			_lastPops = 0;
-			_completeCallBackFunction = completeCallBackFunction;
+			_completeCallBackFunction = null;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
 
 			_layerCanvases = this._generateLayerCanvases();
 			_svgElement = this._createSVGElement();
+		};
+
+		Bubbler.prototype.onComplete = function(completeCallBackFunction)
+		{
+			_completeCallBackFunction = completeCallBackFunction;
 		};
 
 		Bubbler.prototype.getTargetContainer = function()
@@ -220,7 +225,10 @@
 
 			if (_lastPops == Math.pow(4, _layerCount - 2))
 			{
-				_completeCallBackFunction();
+				if (_completeCallBackFunction != null)
+				{
+					_completeCallBackFunction();
+				}
 			}
 		};
 
