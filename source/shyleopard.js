@@ -12,6 +12,7 @@
 
 	ShyLeopard.Bubbler = (function()
 	{
+		let _isInteractable;
 		let _targetContainer;
 		let _image;
 		let _layerCount;
@@ -27,6 +28,7 @@
 
 		function Bubbler(targetContainer, layerCount, smallCellSize, transitionTimer)
 		{
+			_isInteractable = true;
 			_targetContainer = targetContainer;
 			_image = null;
 			_layerCount = layerCount;
@@ -49,6 +51,21 @@
 		Bubbler.prototype.onPop = function(popCallBackFunction)
 		{
 			_popCallBackFunction = popCallBackFunction;
+		};
+
+		Bubbler.prototype.isInteractable = function()
+		{
+			return _isInteractable;
+		};
+
+		Bubbler.prototype.continueInteraction = function()
+		{
+			_isInteractable = true;
+		};
+
+		Bubbler.prototype.pauseInteraction = function()
+		{
+			_isInteractable = false;
 		};
 
 		Bubbler.prototype.getTargetContainer = function()
@@ -203,6 +220,11 @@
 
 		Bubbler.prototype._processMouseOver = function(event)
 		{
+			if (!_isInteractable)
+			{
+				return;
+			}
+
 			if (event.target.tagName != "circle")
 			{
 				return;
