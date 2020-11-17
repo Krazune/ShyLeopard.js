@@ -19,6 +19,7 @@
 		let _transitionTimer;
 		let _lastPops;
 		let _completeCallBackFunction;
+		let _popCallBackFunction;
 		let _svgSize;
 
 		let _layerCanvases;
@@ -33,6 +34,7 @@
 			_transitionTimer = transitionTimer;
 			_lastPops = 0;
 			_completeCallBackFunction = null;
+			_popCallBackFunction = null;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
 
 			_layerCanvases = null;
@@ -42,6 +44,11 @@
 		Bubbler.prototype.onComplete = function(completeCallBackFunction)
 		{
 			_completeCallBackFunction = completeCallBackFunction;
+		};
+
+		Bubbler.prototype.onPop = function(popCallBackFunction)
+		{
+			_popCallBackFunction = popCallBackFunction;
 		};
 
 		Bubbler.prototype.getTargetContainer = function()
@@ -217,6 +224,11 @@
 			let parentColumn = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "column"));
 
 			circleElement.remove();
+
+			if (_popCallBackFunction != null)
+			{
+				_popCallBackFunction({ layer : parentLayer, row : parentRow, column : parentColumn });
+			}
 
 			this._generateCircleChildren(parentLayer, parentRow, parentColumn);
 
