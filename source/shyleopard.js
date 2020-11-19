@@ -18,7 +18,7 @@
 		let _layerCount;
 		let _smallCellSize;
 		let _transitionTimer;
-		let _lastPops;
+		let _lastLayerPopsLeft;
 		let _completeCallBackFunction;
 		let _popCallBackFunction;
 		let _svgSize;
@@ -34,7 +34,7 @@
 			_layerCount = layerCount;
 			_smallCellSize = smallCellSize;
 			_transitionTimer = transitionTimer;
-			_lastPops = 0;
+			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
 			_completeCallBackFunction = null;
 			_popCallBackFunction = null;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
@@ -107,6 +107,7 @@
 		{
 			_svgElement.remove();
 			_svgElement = this._createSVGElement();
+			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
 		};
 
 		Bubbler.prototype._generateCircle = function(layer, row, column)
@@ -256,10 +257,10 @@
 
 			if (parentLayer == _layerCount - 2)
 			{
-				++_lastPops;
+				--_lastLayerPopsLeft;
 			}
 
-			if (_lastPops == Math.pow(4, _layerCount - 2))
+			if (_lastLayerPopsLeft == 0)
 			{
 				if (_completeCallBackFunction != null)
 				{
