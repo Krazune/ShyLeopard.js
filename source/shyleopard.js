@@ -12,35 +12,41 @@
 
 	ShyLeopard.Bubbler = (function()
 	{
-		let _isInteractable;
 		let _targetContainer;
-		let _image;
 		let _layerCount;
 		let _smallCellSize;
 		let _transitionTimer;
-		let _lastLayerPopsLeft;
-		let _completeCallBackFunction;
-		let _popCallBackFunction;
 		let _svgSize;
+
+		let _isInteractable;
+
+		let _image;
+		let _lastLayerPopsLeft;
 
 		let _layerCanvases;
 		let _svgElement;
 
+		let _completeCallBackFunction;
+		let _popCallBackFunction;
+
 		function Bubbler(targetContainer, layerCount, smallCellSize, transitionTimer)
 		{
-			_isInteractable = true;
 			_targetContainer = targetContainer;
-			_image = null;
 			_layerCount = layerCount;
 			_smallCellSize = smallCellSize;
 			_transitionTimer = transitionTimer;
-			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
-			_completeCallBackFunction = null;
-			_popCallBackFunction = null;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
+
+			_isInteractable = true;
+
+			_image = null;
+			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
 
 			_layerCanvases = null;
 			_svgElement = this._createSVGElement();
+
+			_completeCallBackFunction = null;
+			_popCallBackFunction = null;
 		};
 
 		Bubbler.prototype.onComplete = function(completeCallBackFunction)
