@@ -49,14 +49,19 @@
 			_popCallBackFunction = null;
 		};
 
-		Bubbler.prototype.onComplete = function(completeCallBackFunction)
+		Bubbler.prototype.getTargetContainer = function()
 		{
-			_completeCallBackFunction = completeCallBackFunction;
+			return _targetContainer;
 		};
 
-		Bubbler.prototype.onPop = function(popCallBackFunction)
+		Bubbler.prototype.getLayerCount = function()
 		{
-			_popCallBackFunction = popCallBackFunction;
+			return _layerCount;
+		};
+
+		Bubbler.prototype.getSmallCellSize = function()
+		{
+			return _smallCellSize;
 		};
 
 		Bubbler.prototype.isInteractable = function()
@@ -74,29 +79,24 @@
 			_isInteractable = false;
 		};
 
-		Bubbler.prototype.getTargetContainer = function()
-		{
-			return _targetContainer;
-		};
-
 		Bubbler.prototype.getImage = function()
 		{
 			return _image;
 		};
 
-		Bubbler.prototype.getLayerCount = function()
-		{
-			return _layerCount;
-		};
-
-		Bubbler.prototype.getSmallCellSize = function()
-		{
-			return _smallCellSize;
-		};
-
 		Bubbler.prototype.getSVGElement = function()
 		{
 			return _svgElement;
+		};
+
+		Bubbler.prototype.onComplete = function(completeCallBackFunction)
+		{
+			_completeCallBackFunction = completeCallBackFunction;
+		};
+
+		Bubbler.prototype.onPop = function(popCallBackFunction)
+		{
+			_popCallBackFunction = popCallBackFunction;
 		};
 
 		Bubbler.prototype.generate = function(image)
