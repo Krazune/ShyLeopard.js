@@ -64,6 +64,11 @@
 			return _smallCellSize;
 		};
 
+		Bubbler.prototype.getTransitionTimer = function()
+		{
+			return _transitionTimer;
+		};
+
 		Bubbler.prototype.isInteractable = function()
 		{
 			return _isInteractable;
