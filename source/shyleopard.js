@@ -1,4 +1,3 @@
-// WIP api.
 (function(ShyLeopard)
 {
 	"use strict";
@@ -12,45 +11,65 @@
 
 	ShyLeopard.Bubbler = (function()
 	{
-		let _isInteractable;
 		let _targetContainer;
-		let _image;
 		let _layerCount;
 		let _smallCellSize;
 		let _transitionTimer;
-		let _lastPops;
-		let _completeCallBackFunction;
-		let _popCallBackFunction;
 		let _svgSize;
 
+		let _isInteractable;
+
+		let _image;
+
+		let _lastLayerPopsLeft;
+
 		let _layerCanvases;
+
+		const shyLeopardXMLNS = "shyleopard";
+		const shyLeopardURI = "https://github.com/Krazune/ShyLeopard.js";
 		let _svgElement;
+
+		let _completeCallback;
+		let _popCallback;
 
 		function Bubbler(targetContainer, layerCount, smallCellSize, transitionTimer)
 		{
-			_isInteractable = true;
 			_targetContainer = targetContainer;
-			_image = null;
 			_layerCount = layerCount;
 			_smallCellSize = smallCellSize;
 			_transitionTimer = transitionTimer;
-			_lastPops = 0;
-			_completeCallBackFunction = null;
-			_popCallBackFunction = null;
 			_svgSize = smallCellSize * Math.pow(2, layerCount - 1);
+
+			_isInteractable = true;
+
+			_image = null;
+			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
 
 			_layerCanvases = null;
 			_svgElement = this._createSVGElement();
+
+			_completeCallback = null;
+			_popCallback = null;
 		};
 
-		Bubbler.prototype.onComplete = function(completeCallBackFunction)
+		Bubbler.prototype.getTargetContainer = function()
 		{
-			_completeCallBackFunction = completeCallBackFunction;
+			return _targetContainer;
 		};
 
-		Bubbler.prototype.onPop = function(popCallBackFunction)
+		Bubbler.prototype.getLayerCount = function()
 		{
-			_popCallBackFunction = popCallBackFunction;
+			return _layerCount;
+		};
+
+		Bubbler.prototype.getSmallCellSize = function()
+		{
+			return _smallCellSize;
+		};
+
+		Bubbler.prototype.getTransitionTimer = function()
+		{
+			return _transitionTimer;
 		};
 
 		Bubbler.prototype.isInteractable = function()
@@ -68,24 +87,9 @@
 			_isInteractable = false;
 		};
 
-		Bubbler.prototype.getTargetContainer = function()
-		{
-			return _targetContainer;
-		};
-
 		Bubbler.prototype.getImage = function()
 		{
 			return _image;
-		};
-
-		Bubbler.prototype.getLayerCount = function()
-		{
-			return _layerCount;
-		};
-
-		Bubbler.prototype.getSmallCellSize = function()
-		{
-			return _smallCellSize;
 		};
 
 		Bubbler.prototype.getSVGElement = function()
@@ -93,13 +97,28 @@
 			return _svgElement;
 		};
 
+		Bubbler.prototype.onComplete = function(completeCallback)
+		{
+			_completeCallback = completeCallback;
+		};
+
+		Bubbler.prototype.onPop = function(popCallback)
+		{
+			_popCallback = popCallback;
+		};
+
 		Bubbler.prototype.generate = function(image)
 		{
-			this.clear();
+			if (_image != null)
+			{
+				this.clear();
+			}
+
 			_image = image;
 			_layerCanvases = this._generateLayerCanvases();
 			_targetContainer.appendChild(_svgElement);
 
+			// Initial circle.
 			this._generateCircle(0, 0, 0);
 		};
 
@@ -107,6 +126,90 @@
 		{
 			_svgElement.remove();
 			_svgElement = this._createSVGElement();
+
+			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
+		};
+
+		Bubbler.prototype._createSVGElement = function()
+		{
+			let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+			svgElement.setAttribute("xmlns:" + shyLeopardXMLNS, shyLeopardURI);
+			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
+
+			let shyLeopardThis = this;
+
+			svgElement.addEventListener("mouseover", function(event)
+				{
+					shyLeopardThis._processMouseOver(event);
+				});
+
+			return svgElement;
+		};
+
+		Bubbler.prototype._processMouseOver = function(event)
+		{
+			if (!_isInteractable)
+			{
+				return;
+			}
+
+			if (event.target.tagName != "circle")
+			{
+				return;
+			}
+
+			this._processCircleMouseOver(event.target);
+		};
+
+		Bubbler.prototype._processCircleMouseOver = function(parentCircle)
+		{
+			let parentLayer = parseInt(parentCircle.getAttributeNS(shyLeopardURI, "layer"));
+
+			// Already at last layer - not poppable.
+			if (parentLayer == _layerCount - 1)
+			{
+				return;
+			}
+
+			let parentRow = parseInt(parentCircle.getAttributeNS(shyLeopardURI, "row"));
+			let parentColumn = parseInt(parentCircle.getAttributeNS(shyLeopardURI, "column"));
+
+			parentCircle.remove();
+
+			this._generateCircleChildren(parentLayer, parentRow, parentColumn);
+
+			if (_popCallback != null)
+			{
+				_popCallback(
+					{
+						layer: parentLayer,
+						row: parentRow,
+						column: parentColumn
+					});
+			}
+
+			if (parentLayer == _layerCount - 2)
+			{
+				--_lastLayerPopsLeft;
+
+				if (_lastLayerPopsLeft == 0 && _completeCallback != null)
+				{
+					_completeCallback();
+				}
+			}
+		};
+
+		Bubbler.prototype._generateCircleChildren = function(parentLayer, parentRow, parentColumn)
+		{
+			let layer = parentLayer + 1;
+			let baseChildRow = parentRow * 2;
+			let baseChildColumn = parentColumn * 2;
+
+			this._generateCircle(layer, baseChildRow, baseChildColumn);
+			this._generateCircle(layer, baseChildRow, baseChildColumn + 1);
+			this._generateCircle(layer, baseChildRow + 1, baseChildColumn + 1);
+			this._generateCircle(layer, baseChildRow + 1, baseChildColumn);
 		};
 
 		Bubbler.prototype._generateCircle = function(layer, row, column)
@@ -117,36 +220,32 @@
 			let x = row * radius * 2 + radius;
 			let y = column * radius * 2 + radius;
 
-			if (_transitionTimer == 0)
-			{
-				newCircle.setAttributeNS(null, "r", radius.toString());
-				newCircle.setAttributeNS(null, "style", "fill: " + color + ";");
-			}
-			else
-			{
-				newCircle.setAttributeNS(null, "r", "0");
-				newCircle.setAttributeNS(null, "style", "fill: " + color + "; transition: all " + _transitionTimer + "s;");
-			}
-
+			newCircle.setAttributeNS(null, "style", "fill: " + color + "; transition: all " + _transitionTimer + "s;");
 			newCircle.setAttributeNS(null, "cx", x.toString());
 			newCircle.setAttributeNS(null, "cy", y.toString());
 
-			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:layer", layer.toString());
-			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:row", row.toString());
-			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:column", column.toString());
+			newCircle.setAttributeNS(shyLeopardURI, shyLeopardXMLNS + ":layer", layer.toString());
+			newCircle.setAttributeNS(shyLeopardURI, shyLeopardXMLNS + ":row", row.toString());
+			newCircle.setAttributeNS(shyLeopardURI, shyLeopardXMLNS + ":column", column.toString());
 
 			_svgElement.appendChild(newCircle);
 
-			// Make sure the transition runs.
+			// Make sure the transition runs, by forcing reflow (hacky/expensive solution).
 			if (_transitionTimer > 0)
 			{
+				newCircle.setAttributeNS(null, "r", "0");
+
 				requestAnimationFrame(function()
-				{
-					requestAnimationFrame(function()
 					{
-						newCircle.setAttributeNS(null, "r", radius.toString());
+						requestAnimationFrame(function()
+							{
+								newCircle.setAttributeNS(null, "r", radius.toString());
+							});
 					});
-				});
+			}
+			else
+			{
+				newCircle.setAttributeNS(null, "r", radius.toString());
 			}
 		};
 
@@ -199,85 +298,6 @@
 			newCanvas.getContext("2d").drawImage(_image, 0, 0, size, size);
 
 			return newCanvas;
-		};
-
-		Bubbler.prototype._createSVGElement = function()
-		{
-			let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-
-			svgElement.setAttribute("xmlns:shyleopard","https://github.com/Krazune/ShyLeopard.js");
-			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
-
-			let shyLeopardThis = this;
-
-			svgElement.addEventListener("mouseover", function(event)
-				{
-					shyLeopardThis._processMouseOver(event);
-				});
-
-			return svgElement;
-		};
-
-		Bubbler.prototype._processMouseOver = function(event)
-		{
-			if (!_isInteractable)
-			{
-				return;
-			}
-
-			if (event.target.tagName != "circle")
-			{
-				return;
-			}
-
-			this._processCircleMouseOver(event.target);
-		};
-
-		Bubbler.prototype._processCircleMouseOver = function(circleElement)
-		{
-			let parentLayer = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "layer"));
-
-			if (parentLayer == _layerCount - 1)
-			{
-				return;
-			}
-
-			let parentRow = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "row"));
-			let parentColumn = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "column"));
-
-			circleElement.remove();
-
-			if (_popCallBackFunction != null)
-			{
-				_popCallBackFunction({ layer : parentLayer, row : parentRow, column : parentColumn });
-			}
-
-			this._generateCircleChildren(parentLayer, parentRow, parentColumn);
-
-			if (parentLayer == _layerCount - 2)
-			{
-				++_lastPops;
-			}
-
-			if (_lastPops == Math.pow(4, _layerCount - 2))
-			{
-				if (_completeCallBackFunction != null)
-				{
-					_completeCallBackFunction();
-				}
-			}
-		};
-
-		Bubbler.prototype._generateCircleChildren = function(parentLayer, parentRow, parentColumn)
-		{
-			let layer = parentLayer + 1;
-			let childRow = parentRow * 2;
-			let childColumn = parentColumn * 2;
-
-			this._generateCircle(layer, childRow, childColumn);
-			this._generateCircle(layer, childRow, childColumn + 1);
-			this._generateCircle(layer, childRow + 1, childColumn + 1);
-			this._generateCircle(layer, childRow + 1, childColumn);
 		};
 
 		return Bubbler;
