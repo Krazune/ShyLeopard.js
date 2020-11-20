@@ -30,8 +30,8 @@
 		const shyLeopardURI = "https://github.com/Krazune/ShyLeopard.js";
 		let _svgElement;
 
-		let _completeCallBackFunction;
-		let _popCallBackFunction;
+		let _completeCallback;
+		let _popCallback;
 
 		function Bubbler(targetContainer, layerCount, smallCellSize, transitionTimer)
 		{
@@ -49,8 +49,8 @@
 			_layerCanvases = null;
 			_svgElement = this._createSVGElement();
 
-			_completeCallBackFunction = null;
-			_popCallBackFunction = null;
+			_completeCallback = null;
+			_popCallback = null;
 		};
 
 		Bubbler.prototype.getTargetContainer = function()
@@ -98,14 +98,14 @@
 			return _svgElement;
 		};
 
-		Bubbler.prototype.onComplete = function(completeCallBackFunction)
+		Bubbler.prototype.onComplete = function(completeCallback)
 		{
-			_completeCallBackFunction = completeCallBackFunction;
+			_completeCallback = completeCallback;
 		};
 
-		Bubbler.prototype.onPop = function(popCallBackFunction)
+		Bubbler.prototype.onPop = function(popCallback)
 		{
-			_popCallBackFunction = popCallBackFunction;
+			_popCallback = popCallback;
 		};
 
 		Bubbler.prototype.generate = function(image)
@@ -263,9 +263,9 @@
 
 			circleElement.remove();
 
-			if (_popCallBackFunction != null)
+			if (_popCallback != null)
 			{
-				_popCallBackFunction({ layer : parentLayer, row : parentRow, column : parentColumn });
+				_popCallback({ layer : parentLayer, row : parentRow, column : parentColumn });
 			}
 
 			this._generateCircleChildren(parentLayer, parentRow, parentColumn);
@@ -277,9 +277,9 @@
 
 			if (_lastLayerPopsLeft == 0)
 			{
-				if (_completeCallBackFunction != null)
+				if (_completeCallback != null)
 				{
-					_completeCallBackFunction();
+					_completeCallback();
 				}
 			}
 		};
