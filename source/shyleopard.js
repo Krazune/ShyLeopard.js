@@ -1,4 +1,3 @@
-// WIP api.
 (function(ShyLeopard)
 {
 	"use strict";
@@ -110,11 +109,16 @@
 
 		Bubbler.prototype.generate = function(image)
 		{
-			this.clear();
+			if (_image != null)
+			{
+				this.clear();
+			}
+
 			_image = image;
 			_layerCanvases = this._generateLayerCanvases();
 			_targetContainer.appendChild(_svgElement);
 
+			// Initial circle.
 			this._generateCircle(0, 0, 0);
 		};
 
@@ -122,6 +126,7 @@
 		{
 			_svgElement.remove();
 			_svgElement = this._createSVGElement();
+
 			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
 		};
 
@@ -142,6 +147,71 @@
 			return svgElement;
 		};
 
+		Bubbler.prototype._processMouseOver = function(event)
+		{
+			if (!_isInteractable)
+			{
+				return;
+			}
+
+			if (event.target.tagName != "circle")
+			{
+				return;
+			}
+
+			this._processCircleMouseOver(event.target);
+		};
+
+		Bubbler.prototype._processCircleMouseOver = function(parentCircle)
+		{
+			let parentLayer = parseInt(parentCircle.getAttributeNS(shyLeopardURI, "layer"));
+
+			// Already at last layer - not poppable.
+			if (parentLayer == _layerCount - 1)
+			{
+				return;
+			}
+
+			let parentRow = parseInt(parentCircle.getAttributeNS(shyLeopardURI, "row"));
+			let parentColumn = parseInt(parentCircle.getAttributeNS(shyLeopardURI, "column"));
+
+			parentCircle.remove();
+
+			this._generateCircleChildren(parentLayer, parentRow, parentColumn);
+
+			if (_popCallback != null)
+			{
+				_popCallback(
+					{
+						layer: parentLayer,
+						row: parentRow,
+						column: parentColumn
+					});
+			}
+
+			if (parentLayer == _layerCount - 2)
+			{
+				--_lastLayerPopsLeft;
+
+				if (_lastLayerPopsLeft == 0 && _completeCallback != null)
+				{
+					_completeCallback();
+				}
+			}
+		};
+
+		Bubbler.prototype._generateCircleChildren = function(parentLayer, parentRow, parentColumn)
+		{
+			let layer = parentLayer + 1;
+			let baseChildRow = parentRow * 2;
+			let baseChildColumn = parentColumn * 2;
+
+			this._generateCircle(layer, baseChildRow, baseChildColumn);
+			this._generateCircle(layer, baseChildRow, baseChildColumn + 1);
+			this._generateCircle(layer, baseChildRow + 1, baseChildColumn + 1);
+			this._generateCircle(layer, baseChildRow + 1, baseChildColumn);
+		};
+
 		Bubbler.prototype._generateCircle = function(layer, row, column)
 		{
 			let newCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -150,17 +220,7 @@
 			let x = row * radius * 2 + radius;
 			let y = column * radius * 2 + radius;
 
-			if (_transitionTimer == 0)
-			{
-				newCircle.setAttributeNS(null, "r", radius.toString());
-				newCircle.setAttributeNS(null, "style", "fill: " + color + ";");
-			}
-			else
-			{
-				newCircle.setAttributeNS(null, "r", "0");
-				newCircle.setAttributeNS(null, "style", "fill: " + color + "; transition: all " + _transitionTimer + "s;");
-			}
-
+			newCircle.setAttributeNS(null, "style", "fill: " + color + "; transition: all " + _transitionTimer + "s;");
 			newCircle.setAttributeNS(null, "cx", x.toString());
 			newCircle.setAttributeNS(null, "cy", y.toString());
 
@@ -170,16 +230,22 @@
 
 			_svgElement.appendChild(newCircle);
 
-			// Make sure the transition runs.
+			// Make sure the transition runs, by forcing reflow (hacky/expensive solution).
 			if (_transitionTimer > 0)
 			{
+				newCircle.setAttributeNS(null, "r", "0");
+
 				requestAnimationFrame(function()
-				{
-					requestAnimationFrame(function()
 					{
-						newCircle.setAttributeNS(null, "r", radius.toString());
+						requestAnimationFrame(function()
+							{
+								newCircle.setAttributeNS(null, "r", radius.toString());
+							});
 					});
-				});
+			}
+			else
+			{
+				newCircle.setAttributeNS(null, "r", radius.toString());
 			}
 		};
 
@@ -232,68 +298,6 @@
 			newCanvas.getContext("2d").drawImage(_image, 0, 0, size, size);
 
 			return newCanvas;
-		};
-
-		Bubbler.prototype._processMouseOver = function(event)
-		{
-			if (!_isInteractable)
-			{
-				return;
-			}
-
-			if (event.target.tagName != "circle")
-			{
-				return;
-			}
-
-			this._processCircleMouseOver(event.target);
-		};
-
-		Bubbler.prototype._processCircleMouseOver = function(circleElement)
-		{
-			let parentLayer = parseInt(circleElement.getAttributeNS(shyLeopardURI, "layer"));
-
-			if (parentLayer == _layerCount - 1)
-			{
-				return;
-			}
-
-			let parentRow = parseInt(circleElement.getAttributeNS(shyLeopardURI, "row"));
-			let parentColumn = parseInt(circleElement.getAttributeNS(shyLeopardURI, "column"));
-
-			circleElement.remove();
-
-			if (_popCallback != null)
-			{
-				_popCallback({ layer : parentLayer, row : parentRow, column : parentColumn });
-			}
-
-			this._generateCircleChildren(parentLayer, parentRow, parentColumn);
-
-			if (parentLayer == _layerCount - 2)
-			{
-				--_lastLayerPopsLeft;
-			}
-
-			if (_lastLayerPopsLeft == 0)
-			{
-				if (_completeCallback != null)
-				{
-					_completeCallback();
-				}
-			}
-		};
-
-		Bubbler.prototype._generateCircleChildren = function(parentLayer, parentRow, parentColumn)
-		{
-			let layer = parentLayer + 1;
-			let childRow = parentRow * 2;
-			let childColumn = parentColumn * 2;
-
-			this._generateCircle(layer, childRow, childColumn);
-			this._generateCircle(layer, childRow, childColumn + 1);
-			this._generateCircle(layer, childRow + 1, childColumn + 1);
-			this._generateCircle(layer, childRow + 1, childColumn);
 		};
 
 		return Bubbler;
