@@ -21,9 +21,13 @@
 		let _isInteractable;
 
 		let _image;
+
 		let _lastLayerPopsLeft;
 
 		let _layerCanvases;
+
+		const shyLeopardXMLNS = "shyleopard";
+		const shyLeopardURI = "https://github.com/Krazune/ShyLeopard.js";
 		let _svgElement;
 
 		let _completeCallBackFunction;
@@ -125,7 +129,7 @@
 		{
 			let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-			svgElement.setAttribute("xmlns:shyleopard","https://github.com/Krazune/ShyLeopard.js");
+			svgElement.setAttribute("xmlns:" + shyLeopardXMLNS, shyLeopardURI);
 			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
 
 			let shyLeopardThis = this;
@@ -160,9 +164,9 @@
 			newCircle.setAttributeNS(null, "cx", x.toString());
 			newCircle.setAttributeNS(null, "cy", y.toString());
 
-			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:layer", layer.toString());
-			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:row", row.toString());
-			newCircle.setAttributeNS("https://github.com/Krazune/ShyLeopard.js", "shyleopard:column", column.toString());
+			newCircle.setAttributeNS(shyLeopardURI, shyLeopardXMLNS + ":layer", layer.toString());
+			newCircle.setAttributeNS(shyLeopardURI, shyLeopardXMLNS + ":row", row.toString());
+			newCircle.setAttributeNS(shyLeopardURI, shyLeopardXMLNS + ":column", column.toString());
 
 			_svgElement.appendChild(newCircle);
 
@@ -247,15 +251,15 @@
 
 		Bubbler.prototype._processCircleMouseOver = function(circleElement)
 		{
-			let parentLayer = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "layer"));
+			let parentLayer = parseInt(circleElement.getAttributeNS(shyLeopardURI, "layer"));
 
 			if (parentLayer == _layerCount - 1)
 			{
 				return;
 			}
 
-			let parentRow = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "row"));
-			let parentColumn = parseInt(circleElement.getAttributeNS("https://github.com/Krazune/ShyLeopard.js", "column"));
+			let parentRow = parseInt(circleElement.getAttributeNS(shyLeopardURI, "row"));
+			let parentColumn = parseInt(circleElement.getAttributeNS(shyLeopardURI, "column"));
 
 			circleElement.remove();
 
