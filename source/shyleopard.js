@@ -121,6 +121,23 @@
 			_lastLayerPopsLeft = Math.pow(4, _layerCount - 2);
 		};
 
+		Bubbler.prototype._createSVGElement = function()
+		{
+			let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+			svgElement.setAttribute("xmlns:shyleopard","https://github.com/Krazune/ShyLeopard.js");
+			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
+
+			let shyLeopardThis = this;
+
+			svgElement.addEventListener("mouseover", function(event)
+				{
+					shyLeopardThis._processMouseOver(event);
+				});
+
+			return svgElement;
+		};
+
 		Bubbler.prototype._generateCircle = function(layer, row, column)
 		{
 			let newCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -211,23 +228,6 @@
 			newCanvas.getContext("2d").drawImage(_image, 0, 0, size, size);
 
 			return newCanvas;
-		};
-
-		Bubbler.prototype._createSVGElement = function()
-		{
-			let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-
-			svgElement.setAttribute("xmlns:shyleopard","https://github.com/Krazune/ShyLeopard.js");
-			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
-
-			let shyLeopardThis = this;
-
-			svgElement.addEventListener("mouseover", function(event)
-				{
-					shyLeopardThis._processMouseOver(event);
-				});
-
-			return svgElement;
 		};
 
 		Bubbler.prototype._processMouseOver = function(event)
