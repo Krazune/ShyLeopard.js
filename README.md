@@ -4,7 +4,7 @@ A JavaScript bubbly image generator (heavily inspired by Vadim Ogievetsky's [koa
 ---
 
 ## Version
-Current version: **2020.11.1**
+Current version: **2020.11.2**
 
 *The version format is &quot;&lt;year&gt;.&lt;zero padded month&gt;.&lt;revision number&gt;&quot;.*
 
