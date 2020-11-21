@@ -4,7 +4,7 @@ A JavaScript bubbly image generator (heavily inspired by Vadim Ogievetsky's [koa
 ---
 
 ## Version
-Current version: **2020.11.1**
+Current version: **2020.11.2**
 
 *The version format is &quot;&lt;year&gt;.&lt;zero padded month&gt;.&lt;revision number&gt;&quot;.*
 
@@ -51,6 +51,6 @@ This generates an SVG element inside the target container, and all circles are c
 
 Canvases are used to read, and resize, the source image into the different layers.
 
-When the transitions are enabled, the script forces a reflow every time a bubble is popped, whic is not very efficient - this might be subject to change.
+When the transitions are enabled, the script forces a reflow every time a bubble is popped, which is not very efficient - this might be subject to change.
 
 This was created for educational purposes only.
