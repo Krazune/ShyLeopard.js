@@ -25,11 +25,11 @@
 {
 	"use strict";
 
-	let version = "2020.11.1";
+	let _version = "2020.11.1";
 
 	ShyLeopard.getVersion = function()
 	{
-		return version;
+		return _version;
 	};
 
 	ShyLeopard.Bubbler = (function()
