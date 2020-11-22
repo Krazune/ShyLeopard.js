@@ -141,8 +141,14 @@
 			_layerCanvases = this._generateLayerCanvases();
 			_targetContainer.appendChild(_svgElement);
 
-			// Initial circle.
-			this._generateCircle(0, 0, 0);
+			let bubblerThis = this;
+
+			// The transition is not triggered if the initial circle is added at the same time as the svg element.
+			requestAnimationFrame(function()
+				{
+					// Initial circle.
+					bubblerThis._generateCircle(0, 0, 0);
+				});
 		};
 
 		Bubbler.prototype.clear = function()
@@ -253,17 +259,14 @@
 
 			_svgElement.appendChild(newCircle);
 
-			// Make sure the transition runs, by forcing reflow (hacky/expensive solution).
 			if (_transitionTimer > 0)
 			{
 				newCircle.setAttributeNS(null, "r", "0");
 
+				// Make sure the transition runs, by setting the radius on the next frame.
 				requestAnimationFrame(function()
 					{
-						requestAnimationFrame(function()
-							{
-								newCircle.setAttributeNS(null, "r", radius.toString());
-							});
+						newCircle.setAttributeNS(null, "r", radius.toString());
 					});
 			}
 			else
