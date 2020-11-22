@@ -56,6 +56,4 @@ This generates an SVG element inside the target container, and all circles are c
 
 Canvases are used to read, and resize, the source image into the different layers.
 
-When the transitions are enabled, the script forces a reflow every time a bubble is popped, which is not very efficient - this might be subject to change.
-
 This was created for educational purposes only.
