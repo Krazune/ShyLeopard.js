@@ -25,7 +25,7 @@
 {
 	"use strict";
 
-	let _version = "2020.11.2";
+	let _version = "2020.11.3";
 
 	ShyLeopard.getVersion = function()
 	{
@@ -141,8 +141,14 @@
 			_layerCanvases = this._generateLayerCanvases();
 			_targetContainer.appendChild(_svgElement);
 
-			// Initial circle.
-			this._generateCircle(0, 0, 0);
+			let bubblerThis = this;
+
+			// The transition is not triggered if the initial circle is added at the same time as the svg element.
+			requestAnimationFrame(function()
+				{
+					// Initial circle.
+					bubblerThis._generateCircle(0, 0, 0);
+				});
 		};
 
 		Bubbler.prototype.clear = function()
@@ -160,11 +166,11 @@
 			svgElement.setAttribute("xmlns:" + shyLeopardXMLNS, shyLeopardURI);
 			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
 
-			let shyLeopardThis = this;
+			let bubblerThis = this;
 
 			svgElement.addEventListener("mouseover", function(event)
 				{
-					shyLeopardThis._processMouseOver(event);
+					bubblerThis._processMouseOver(event);
 				});
 
 			return svgElement;
@@ -253,17 +259,14 @@
 
 			_svgElement.appendChild(newCircle);
 
-			// Make sure the transition runs, by forcing reflow (hacky/expensive solution).
 			if (_transitionTimer > 0)
 			{
 				newCircle.setAttributeNS(null, "r", "0");
 
+				// Make sure the transition runs, by setting the radius on the next frame.
 				requestAnimationFrame(function()
 					{
-						requestAnimationFrame(function()
-							{
-								newCircle.setAttributeNS(null, "r", radius.toString());
-							});
+						newCircle.setAttributeNS(null, "r", radius.toString());
 					});
 			}
 			else

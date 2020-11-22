@@ -4,7 +4,7 @@ A JavaScript bubbly image generator (heavily inspired by Vadim Ogievetsky's [koa
 ---
 
 ## Version
-Current version: **2020.11.2**
+Current version: **2020.11.3**
 
 *The version format is &quot;&lt;year&gt;.&lt;zero padded month&gt;.&lt;revision number&gt;&quot;.*
 
@@ -12,6 +12,11 @@ Current version: **2020.11.2**
 
 ## License
 [MIT License](LICENSE.md)
+
+---
+
+## Live example
+[ShyLeopard.js GitHub.io](https://krazune.github.io/ShyLeopard/)
 
 ---
 
