@@ -15,6 +15,11 @@ Current version: **2020.11.3**
 
 ---
 
+## Live example
+[ShyLeopard.js GitHub.io](https://krazune.github.io/ShyLeopard/)
+
+---
+
 ## Usage
 After the script is included in the document, it can be used as follows:
 ```JavaScript
