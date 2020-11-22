@@ -166,11 +166,11 @@
 			svgElement.setAttribute("xmlns:" + shyLeopardXMLNS, shyLeopardURI);
 			svgElement.setAttributeNS(null, "viewBox", "0 0 " + _svgSize + " " + _svgSize);
 
-			let shyLeopardThis = this;
+			let bubblerThis = this;
 
 			svgElement.addEventListener("mouseover", function(event)
 				{
-					shyLeopardThis._processMouseOver(event);
+					bubblerThis._processMouseOver(event);
 				});
 
 			return svgElement;
