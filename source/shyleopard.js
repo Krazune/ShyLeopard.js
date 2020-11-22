@@ -25,7 +25,7 @@
 {
 	"use strict";
 
-	let _version = "2020.11.2";
+	let _version = "2020.11.3";
 
 	ShyLeopard.getVersion = function()
 	{
